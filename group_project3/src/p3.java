@@ -44,6 +44,7 @@ public class p3 {
             }
         }else{
             System.out.println("Expected input: p3 <username> <password> <option>");
+            return;
         }
 
         username = args[0];
@@ -74,9 +75,11 @@ public class p3 {
 
                     query = "SELECT * " +
                             "FROM LOCATIONS " +
-                            "WHERE locationID = " + input;
+                            "WHERE locationID = '" + input + "'";
+                    System.out.println(query);
                     ResultSet rset = stmt.executeQuery(query);
 
+                    System.out.println("Query executed");
                     String locationID = "";
                     String locationName = "";
                     String locationType = "";
@@ -84,6 +87,19 @@ public class p3 {
                     int yCoord = 0;
                     int M = 0;
                     while (rset.next()) {
+                        System.out.println("entered Loop");
+                        locationID = rset.getString("locationID");
+                        locationName = rset.getString("locationName");
+                        locationType = rset.getString("locationType");
+                        xCoord = rset.getInt("xcoord");
+                        yCoord = rset.getInt("ycoord");
+                        System.out.println("Location Information");
+                        System.out.println("Location ID: " + locationID);
+                        System.out.println("Location Name: " + locationName);
+                        System.out.println("Location Type: " + locationType);
+                        System.out.println("X-Coordinate: " + xCoord);
+                        System.out.println("Y-Coordinate: " + yCoord);
+                        System.out.println("Floor: " + M);
                     }
             }
 

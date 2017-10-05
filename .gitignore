@@ -1,0 +1,4 @@
+# Files to ignore
+*.iml
+*.idea
+*.class
