@@ -63,6 +63,7 @@ public class p3 {
         try {
             Statement stmt = connection.createStatement();
             String query = "";
+            ResultSet rset;
             switch (option) {
                 case 1:
                     System.out.println("Enter Location ID:");
@@ -76,23 +77,16 @@ public class p3 {
                     query = "SELECT * " +
                             "FROM LOCATIONS " +
                             "WHERE locationID = '" + input + "'";
-                    System.out.println(query);
-                    ResultSet rset = stmt.executeQuery(query);
 
-                    System.out.println("Query executed");
-                    String locationID = "";
-                    String locationName = "";
-                    String locationType = "";
-                    int xCoord = 0;
-                    int yCoord = 0;
-                    int M = 0;
-                    while (rset.next()) {
-                        System.out.println("entered Loop");
-                        locationID = rset.getString("locationID");
-                        locationName = rset.getString("locationName");
-                        locationType = rset.getString("locationType");
-                        xCoord = rset.getInt("xcoord");
-                        yCoord = rset.getInt("ycoord");
+                    rset = stmt.executeQuery(query);
+
+                    if(rset.next()) {
+                        String locationID = rset.getString("locationID");
+                        String locationName = rset.getString("locationName");
+                        String locationType = rset.getString("locationType");
+                        int xCoord = rset.getInt("xcoord");
+                        int yCoord = rset.getInt("ycoord");
+                        String M = rset.getString("mapFloor");
                         System.out.println("Location Information");
                         System.out.println("Location ID: " + locationID);
                         System.out.println("Location Name: " + locationName);
@@ -101,6 +95,52 @@ public class p3 {
                         System.out.println("Y-Coordinate: " + yCoord);
                         System.out.println("Floor: " + M);
                     }
+                    System.out.println("done");
+                    break;
+                case 2:
+                    System.out.println("Enter Edge ID:");
+                    try {
+                        input = in.readLine();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    query =
+                            "SELECT s.edgeID, s.locationName s_locationName, s.mapFloor s_M, f.locationName f_locationName, f.mapFloor f_M " +
+                            "FROM (SELECT edgeID, locationName, mapFloor " +
+                                "FROM edges INNER JOIN locations " +
+                                "ON startingLocationID = locationID " +
+                                "WHERE edgeID = '" + input + "') s " +
+                            "INNER JOIN " +
+                                "(SELECT edgeID, locationName, mapFloor " +
+                                "FROM edges INNER JOIN locations " +
+                                "ON endingLocationID = locationID " +
+                                "WHERE edgeID = '" + input + "') f " +
+                                "ON s.edgeID = f.edgeID";
+
+                    rset = stmt.executeQuery(query);
+
+                    String edgeID = "";
+                    String sLocationName = "";
+                    String sFloor = "";
+                    String fLocationName = "";
+                    String fFloor = "";
+
+                    while (rset.next()){
+                        edgeID  = rset.getString("edgeID");
+                        sLocationName = rset.getString("s_locationName");
+                        sFloor = rset.getString("s_M");
+                        fLocationName = rset.getString("f_locationName");
+                        fFloor = rset.getString("f_M");
+                        System.out.println("Edges Information");
+                        System.out.println("Edge ID: " + edgeID);
+                        System.out.println("Starting Location Name: " + sLocationName);
+                        System.out.println("Starting Location Floor: " + sFloor);
+                        System.out.println("Ending Location Name: " + fLocationName);
+                        System.out.println("Ending Location Floor: " + fFloor);
+                    }
+                    break;
             }
 
         }catch (SQLException e){
