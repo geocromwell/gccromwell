@@ -1,8 +1,14 @@
 /**
  * Created by dominic on 10/4/17.
  */
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.*;
+import java.util.Set;
+import java.util.TreeSet;
+
 public class p3 {
 
     public static void main(String [] args){
@@ -95,18 +101,16 @@ public class p3 {
                         System.out.println("Y-Coordinate: " + yCoord);
                         System.out.println("Floor: " + M);
                     }
-                    System.out.println("done");
                     break;
                 case 2:
-                    System.out.println("Enter Edge ID:");
                     try {
                         input = in.readLine();
                     } catch (IOException e) {
                         e.printStackTrace();
                         return;
                     }
-
-                    query =
+                    System.out.println("Enter Edge ID:");
+                                        query =
                             "SELECT s.edgeID, s.locationName s_locationName, s.mapFloor s_M, f.locationName f_locationName, f.mapFloor f_M " +
                             "FROM (SELECT edgeID, locationName, mapFloor " +
                                 "FROM edges INNER JOIN locations " +
@@ -141,7 +145,75 @@ public class p3 {
                         System.out.println("Ending Location Floor: " + fFloor);
                     }
                     break;
+                case 3:
+                    System.out.println("Enter CS Staff Account Name:");
+                    try {
+                        input = in.readLine();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    query = "SELECT X.accountName, X.firstName, X.lastName, X.officeID, X.titleName, P.phoneExt " +
+                            "FROM" +
+                            " (SELECT F.accountName, F.firstName, F.lastName, F.officeID, S.titleName " + "FROM" +
+                            " (SELECT C.accountName, C.firstName, C.lastName, C.officeID, T.acronym " +
+                            "FROM (SELECT * " +
+                            "FROM CSSTAFF " +
+                            "WHERE accountName = '" + input + "') C" + ", CSSTAFFTITLES T" +
+                            " WHERE C.accountName = T.accountName) F, TITLES S" +
+                            " WHERE F.acronym = S.acronym) X, PhoneExtensions P" +
+                            " WHERE X.accountName = P.accountName";
+                    System.out.println(query);
+                    rset = stmt.executeQuery(query);
+
+                    Set<String> titles = new TreeSet<String>();
+                    Set<String> pExts = new TreeSet<String>();
+
+                    System.out.println("CS Staff Information");
+                    String aName = "Account Name: ";
+                    String fName = "First Name: ";
+                    String lName = "Last Name: ";
+                    String title = "";
+                    String pExt = "";
+                    String tempTitle;
+                    String tempExt;
+
+                    if(rset.next()) {
+                        System.out.println(aName + rset.getString("accountName"));
+                        System.out.println(fName + rset.getString("firstName"));
+                        System.out.println(lName + rset.getString("lastName"));
+                        System.out.println("Office ID: " + rset.getInt("officeID"));
+                        tempTitle = rset.getString("titleName");
+                        tempExt = Integer.toString(rset.getInt("phoneExt"));
+                        titles.add(tempTitle);
+                        pExts.add(tempExt);
+                        title = tempTitle;
+                        pExt = tempExt;
+                    }
+
+                    while(rset.next()) {
+                        tempTitle = rset.getString("titleName");
+                        tempExt = Integer.toString(rset.getInt("phoneExt"));
+                        titles.add(tempTitle);
+                        pExts.add(tempExt);
+                    }
+                    tempTitle = title;
+                    tempExt = pExt;
+
+                    for (String t : titles) {
+                        if(!t.equals(tempTitle))
+                            title += ", " + t;
+                    }
+
+                    for (String e : pExts) {
+                        if(!e.equals(tempExt))
+                            pExt += ", " + e;
+                    }
+                    System.out.println("Title: " + title);
+                    System.out.println("Phone Ext: " + pExt);
+                    break;
             }
+
 
         }catch (SQLException e){
 
