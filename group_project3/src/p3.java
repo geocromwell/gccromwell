@@ -1,8 +1,14 @@
 /**
  * Created by dominic on 10/4/17.
  */
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.*;
+import java.util.Set;
+import java.util.TreeSet;
+
 public class p3 {
 
     public static void main(String [] args){
@@ -63,6 +69,7 @@ public class p3 {
         try {
             Statement stmt = connection.createStatement();
             String query = "";
+            ResultSet rset;
             switch (option) {
                 case 1:
                     System.out.println("Enter Location ID:");
@@ -76,23 +83,16 @@ public class p3 {
                     query = "SELECT * " +
                             "FROM LOCATIONS " +
                             "WHERE locationID = '" + input + "'";
-                    System.out.println(query);
-                    ResultSet rset = stmt.executeQuery(query);
 
-                    System.out.println("Query executed");
-                    String locationID = "";
-                    String locationName = "";
-                    String locationType = "";
-                    int xCoord = 0;
-                    int yCoord = 0;
-                    int M = 0;
-                    while (rset.next()) {
-                        System.out.println("entered Loop");
-                        locationID = rset.getString("locationID");
-                        locationName = rset.getString("locationName");
-                        locationType = rset.getString("locationType");
-                        xCoord = rset.getInt("xcoord");
-                        yCoord = rset.getInt("ycoord");
+                    rset = stmt.executeQuery(query);
+
+                    if(rset.next()) {
+                        String locationID = rset.getString("locationID");
+                        String locationName = rset.getString("locationName");
+                        String locationType = rset.getString("locationType");
+                        int xCoord = rset.getInt("xcoord");
+                        int yCoord = rset.getInt("ycoord");
+                        String M = rset.getString("mapFloor");
                         System.out.println("Location Information");
                         System.out.println("Location ID: " + locationID);
                         System.out.println("Location Name: " + locationName);
@@ -100,6 +100,49 @@ public class p3 {
                         System.out.println("X-Coordinate: " + xCoord);
                         System.out.println("Y-Coordinate: " + yCoord);
                         System.out.println("Floor: " + M);
+                    }
+                    break;
+                case 2:
+                    try {
+                        input = in.readLine();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    System.out.println("Enter Edge ID:");
+                                        query =
+                            "SELECT s.edgeID, s.locationName s_locationName, s.mapFloor s_M, f.locationName f_locationName, f.mapFloor f_M " +
+                            "FROM (SELECT edgeID, locationName, mapFloor " +
+                                "FROM edges INNER JOIN locations " +
+                                "ON startingLocationID = locationID " +
+                                "WHERE edgeID = '" + input + "') s " +
+                            "INNER JOIN " +
+                                "(SELECT edgeID, locationName, mapFloor " +
+                                "FROM edges INNER JOIN locations " +
+                                "ON endingLocationID = locationID " +
+                                "WHERE edgeID = '" + input + "') f " +
+                                "ON s.edgeID = f.edgeID";
+
+                    rset = stmt.executeQuery(query);
+
+                    String edgeID = "";
+                    String sLocationName = "";
+                    String sFloor = "";
+                    String fLocationName = "";
+                    String fFloor = "";
+
+                    while (rset.next()){
+                        edgeID  = rset.getString("edgeID");
+                        sLocationName = rset.getString("s_locationName");
+                        sFloor = rset.getString("s_M");
+                        fLocationName = rset.getString("f_locationName");
+                        fFloor = rset.getString("f_M");
+                        System.out.println("Edges Information");
+                        System.out.println("Edge ID: " + edgeID);
+                        System.out.println("Starting Location Name: " + sLocationName);
+                        System.out.println("Starting Location Floor: " + sFloor);
+                        System.out.println("Ending Location Name: " + fLocationName);
+                        System.out.println("Ending Location Floor: " + fFloor);
                     }
                     break;
                 case 3:
@@ -121,24 +164,53 @@ public class p3 {
                             " WHERE F.acronym = S.acronym) X, PhoneExtensions P" +
                             " WHERE X.accountName = P.accountName";
                     System.out.println(query);
-                    ResultSet rset3 = stmt.executeQuery(query);
+                    rset = stmt.executeQuery(query);
+
+                    Set<String> titles = new TreeSet<String>();
+                    Set<String> pExts = new TreeSet<String>();
 
                     System.out.println("CS Staff Information");
                     String aName = "Account Name: ";
                     String fName = "First Name: ";
                     String lName = "Last Name: ";
-                    int oID ;
-                    String title = "Title: ";
-                    int pExt ;// "Phone Ext: ";
+                    String title = "";
+                    String pExt = "";
+                    String tempTitle;
+                    String tempExt;
 
-                    while(rset3.next()) {
-                        System.out.println(aName + rset3.getString("accountName"));
-                        System.out.println(fName + rset3.getString("firstName"));
-                        System.out.println(lName + rset3.getString("lastName"));
-                        System.out.println("Office ID: " + rset3.getInt("officeID"));
-                        System.out.println(title + rset3.getString("titleName"));
-                        System.out.println("Phone Ext: " + rset3.getInt("phoneExt"));
+                    if(rset.next()) {
+                        System.out.println(aName + rset.getString("accountName"));
+                        System.out.println(fName + rset.getString("firstName"));
+                        System.out.println(lName + rset.getString("lastName"));
+                        System.out.println("Office ID: " + rset.getInt("officeID"));
+                        tempTitle = rset.getString("titleName");
+                        tempExt = Integer.toString(rset.getInt("phoneExt"));
+                        titles.add(tempTitle);
+                        pExts.add(tempExt);
+                        title = tempTitle;
+                        pExt = tempExt;
                     }
+
+                    while(rset.next()) {
+                        tempTitle = rset.getString("titleName");
+                        tempExt = Integer.toString(rset.getInt("phoneExt"));
+                        titles.add(tempTitle);
+                        pExts.add(tempExt);
+                    }
+                    tempTitle = title;
+                    tempExt = pExt;
+
+                    for (String t : titles) {
+                        if(!t.equals(tempTitle))
+                            title += ", " + t;
+                    }
+
+                    for (String e : pExts) {
+                        if(!e.equals(tempExt))
+                            pExt += ", " + e;
+                    }
+                    System.out.println("Title: " + title);
+                    System.out.println("Phone Ext: " + pExt);
                     break;
                 case 4:
                     System.out.println("Enter CS Staff Acount Name: ");
@@ -162,13 +234,14 @@ public class p3 {
                     query = "INSERT INTO PhoneExtensions (accountName, phoneExt) " +
                             "VALUES ( '" + acName + "', " + phExten + ")";
                     System.out.println(query);
-                    ResultSet rset4 = stmt.executeQuery(query);
+                    rset = stmt.executeQuery(query);
                     break;
             }
 
 
         }catch (SQLException e){
-
+            e.printStackTrace();
+            return;
         }
     }
 }
