@@ -140,8 +140,30 @@ public class p3 {
                         System.out.println("Phone Ext: " + rset3.getInt("phoneExt"));
                     }
                     break;
+                case 4:
+                    System.out.println("Enter CS Staff Acount Name: ");
+                    try {
+                        input = in.readLine();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    String acName = input;
+                    System.out.println("Enter New Phone Extension: ");
+                    try {
+                        input = in.readLine();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    String phExt = input;
+                    int phExten = Integer.parseInt(phExt);
 
-
+                    query = "INSERT INTO PhoneExtensions (accountName, phoneExt) " +
+                            "VALUES ( '" + acName + "', " + phExten + ")";
+                    System.out.println(query);
+                    ResultSet rset4 = stmt.executeQuery(query);
+                    break;
             }
 
 
