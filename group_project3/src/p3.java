@@ -101,7 +101,49 @@ public class p3 {
                         System.out.println("Y-Coordinate: " + yCoord);
                         System.out.println("Floor: " + M);
                     }
+                    break;
+                case 3:
+                    System.out.println("Enter CS Staff Account Name:");
+                    try {
+                        input = in.readLine();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    query = "SELECT X.accountName, X.firstName, X.lastName, X.officeID, X.titleName, P.phoneExt " +
+                            "FROM" +
+                            " (SELECT F.accountName, F.firstName, F.lastName, F.officeID, S.titleName " + "FROM" +
+                            " (SELECT C.accountName, C.firstName, C.lastName, C.officeID, T.acronym " +
+                            "FROM (SELECT * " +
+                            "FROM CSSTAFF " +
+                            "WHERE accountName = '" + input + "') C" + ", CSSTAFFTITLES T" +
+                            " WHERE C.accountName = T.accountName) F, TITLES S" +
+                            " WHERE F.acronym = S.acronym) X, PhoneExtensions P" +
+                            " WHERE X.accountName = P.accountName";
+                    System.out.println(query);
+                    ResultSet rset3 = stmt.executeQuery(query);
+
+                    System.out.println("CS Staff Information");
+                    String aName = "Account Name: ";
+                    String fName = "First Name: ";
+                    String lName = "Last Name: ";
+                    int oID ;
+                    String title = "Title: ";
+                    int pExt ;// "Phone Ext: ";
+
+                    while(rset3.next()) {
+                        System.out.println(aName + rset3.getString("accountName"));
+                        System.out.println(fName + rset3.getString("firstName"));
+                        System.out.println(lName + rset3.getString("lastName"));
+                        System.out.println("Office ID: " + rset3.getInt("officeID"));
+                        System.out.println(title + rset3.getString("titleName"));
+                        System.out.println("Phone Ext: " + rset3.getInt("phoneExt"));
+                    }
+                    break;
+
+
             }
+
 
         }catch (SQLException e){
 
