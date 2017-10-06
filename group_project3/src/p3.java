@@ -212,11 +212,36 @@ public class p3 {
                     System.out.println("Title: " + title);
                     System.out.println("Phone Ext: " + pExt);
                     break;
+                case 4:
+                    System.out.println("Enter CS Staff Acount Name: ");
+                    try {
+                        input = in.readLine();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    String acName = input;
+                    System.out.println("Enter New Phone Extension: ");
+                    try {
+                        input = in.readLine();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    String phExt = input;
+                    int phExten = Integer.parseInt(phExt);
+
+                    query = "INSERT INTO PhoneExtensions (accountName, phoneExt) " +
+                            "VALUES ( '" + acName + "', " + phExten + ")";
+                    System.out.println(query);
+                    rset = stmt.executeQuery(query);
+                    break;
             }
 
 
         }catch (SQLException e){
-
+            e.printStackTrace();
+            return;
         }
     }
 }
