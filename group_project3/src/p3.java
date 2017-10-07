@@ -163,7 +163,6 @@ public class p3 {
                             " WHERE C.accountName = T.accountName) F, TITLES S" +
                             " WHERE F.acronym = S.acronym) X, PhoneExtensions P" +
                             " WHERE X.accountName = P.accountName";
-                    System.out.println(query);
                     rset = stmt.executeQuery(query);
 
                     Set<String> titles = new TreeSet<String>();
@@ -209,8 +208,10 @@ public class p3 {
                         if(!e.equals(tempExt))
                             pExt += ", " + e;
                     }
-                    System.out.println("Title: " + title);
-                    System.out.println("Phone Ext: " + pExt);
+                    if(!title.equals(""))
+                        System.out.println("Title: " + title);
+                    if(!pExt.equals(""))
+                        System.out.println("Phone Ext: " + pExt);
                     break;
                 case 4:
                     System.out.println("Enter CS Staff Acount Name: ");
@@ -233,7 +234,6 @@ public class p3 {
 
                     query = "INSERT INTO PhoneExtensions (accountName, phoneExt) " +
                             "VALUES ( '" + acName + "', " + phExten + ")";
-                    System.out.println(query);
                     rset = stmt.executeQuery(query);
                     break;
                 case 5:
