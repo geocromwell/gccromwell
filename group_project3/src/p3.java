@@ -236,6 +236,9 @@ public class p3 {
                     System.out.println(query);
                     rset = stmt.executeQuery(query);
                     break;
+                case 5:
+                    System.out.println("Exiting program");
+                    return;
             }
 
 
